@@ -1,17 +1,17 @@
-var searchInput = document.querySelector('.search');
-var itemWrapper = document.querySelector('main');
+var searchInput = $('.search');
+var itemWrapper = $('main');
 
 function displayMatches(matches) {
-  itemWrapper.innerHTML = '';
+  itemWrapper.html('');
 
   if (!matches) {
-    itemWrapper.innerHTML ='<p class="no-search" >No results found</p>';
+    itemWrapper.innerHTML('<p class="no-search" >No results found</p>');
     return;
   }
 
   console.log(matches);
   for (var matchObj of matches) {
-    itemWrapper.insertAdjacentHTML('beforeend', `
+    itemWrapper.append(`
       <div class="movie-item" style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${matchObj.Poster})">
         <h3>${matchObj.Title}</h3>
         <p>Release Year: ${matchObj.Year}</p>
@@ -23,23 +23,14 @@ function displayMatches(matches) {
 
 function getMovieData(event) {
   var keyCode = event.keyCode;
-  var searchText = searchInput.value.trim().toLowerCase();
+  var searchText = searchInput.val().trim();
 
   if (keyCode === 13 && searchText) {
-    var responsePromise = fetch(`https://www.omdbapi.com/?apikey=20dc4c7f&s=${searchText}`);
-
-    function handleResponse(responseObj) {
-      return responseObj.json();
-    }
-
-    responsePromise
-      .then(handleResponse)
+    $.get(`https://www.omdbapi.com/?apikey=20dc4c7f&s=${searchText}`)
       .then(function (data) {
-        console.log(data);
-        displayMatches(data.Search); // data.Search -> array of matches
-      });
-
-
+          console.log(data);
+          displayMatches(data.Search); // data.Search -> array of matches
+    });
   }
 }
 
@@ -68,8 +59,9 @@ function showMovieDetails(movieId) {
 }
 
 function init() {
-  searchInput.addEventListener('keydown', getMovieData);
-  itemWrapper.addEventListener('click', function (event) {
+  searchInput.keydown(getMovieData);
+  
+  itemWrapper.click(function (event) {
     event.preventDefault();
 
     var el = event.target;
